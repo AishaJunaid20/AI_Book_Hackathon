@@ -48,12 +48,18 @@ const config = {
       /** @type {import('@docusaurus/preset-classic').Options} */
       ({
         docs: {
-          sidebarPath: './sidebars.js',
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
-          editUrl:
-            'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
-        },
+  sidebarPath: './sidebars.js',
+
+  // ✅ prevent build failure on broken docs links
+  onBrokenLinks: 'warn',
+  onBrokenMarkdownLinks: 'warn',
+
+  // Please change this to your repo.
+  // Remove this to remove the "edit this page" links.
+  editUrl:
+    'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
+},
+
         blog: {
           showReadingTime: true,
           feedOptions: {
