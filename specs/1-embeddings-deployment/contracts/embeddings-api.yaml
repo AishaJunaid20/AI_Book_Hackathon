@@ -1,0 +1,173 @@
+# API Contract: Embeddings Service
+
+## Overview
+This contract defines the API for the embeddings generation and storage service. The service handles fetching content from URLs, chunking it, generating embeddings using Cohere, and storing them in Qdrant.
+
+## Endpoints
+
+### POST /process-url
+**Description**: Process content from a URL, generate embeddings, and store in Qdrant
+
+#### Request
+```
+POST /process-url
+Content-Type: application/json
+Authorization: Bearer {API_KEY}
+```
+
+**Request Body**:
+```json
+{
+  "url": "https://example.com/book-content",
+  "collection_name": "book_embeddings",
+  "chunk_size": 1000,
+  "model": "embed-english-v3.0"
+}
+```
+
+**Parameters**:
+- `url` (string, required): The URL of the book content to process
+- `collection_name` (string, optional): Qdrant collection name (default: "book_embeddings")
+- `chunk_size` (integer, optional): Number of words per chunk (default: 1000)
+- `model` (string, optional): Cohere embedding model name (default: "embed-english-v3.0")
+
+#### Response
+**Success Response (202)**:
+```json
+{
+  "job_id": "uuid-string",
+  "status": "processing",
+  "message": "Content processing started",
+  "total_chunks": 45,
+  "estimated_time_seconds": 120
+}
+```
+
+**Error Response (400)**:
+```json
+{
+  "error": "invalid_url",
+  "message": "The provided URL is invalid or inaccessible"
+}
+```
+
+**Error Response (500)**:
+```json
+{
+  "error": "processing_error",
+  "message": "An error occurred during content processing"
+}
+```
+
+### GET /job-status/{job_id}
+**Description**: Get the status of a content processing job
+
+#### Request
+```
+GET /job-status/{job_id}
+Authorization: Bearer {API_KEY}
+```
+
+#### Response
+**Success Response (200)**:
+```json
+{
+  "job_id": "uuid-string",
+  "status": "completed",
+  "total_chunks": 45,
+  "processed_chunks": 45,
+  "created_at": "2026-01-01T10:00:00Z",
+  "completed_at": "2026-01-01T10:02:30Z",
+  "embeddings_count": 45,
+  "collection_name": "book_embeddings"
+}
+```
+
+### POST /search
+**Description**: Search for similar content using embeddings
+
+#### Request
+```
+POST /search
+Content-Type: application/json
+Authorization: Bearer {API_KEY}
+```
+
+**Request Body**:
+```json
+{
+  "query": "text to search for similarity",
+  "collection_name": "book_embeddings",
+  "limit": 5
+}
+```
+
+**Parameters**:
+- `query` (string, required): The text to search for similar content
+- `collection_name` (string, optional): Qdrant collection name (default: "book_embeddings")
+- `limit` (integer, optional): Number of results to return (default: 5)
+
+#### Response
+**Success Response (200)**:
+```json
+{
+  "results": [
+    {
+      "id": "embedding-uuid",
+      "score": 0.85,
+      "payload": {
+        "text": "text snippet from the original content",
+        "chunk_id": "chunk-uuid",
+        "book_content_id": "book-uuid"
+      }
+    }
+  ]
+}
+```
+
+### GET /collections
+**Description**: List available Qdrant collections
+
+#### Request
+```
+GET /collections
+Authorization: Bearer {API_KEY}
+```
+
+#### Response
+**Success Response (200)**:
+```json
+{
+  "collections": [
+    {
+      "name": "book_embeddings",
+      "vectors_count": 1250,
+      "vector_size": 1024,
+      "distance": "Cosine"
+    }
+  ]
+}
+```
+
+## Error Codes
+
+| Code | Name | Description |
+|------|------|-------------|
+| 400 | invalid_url | The provided URL is invalid or inaccessible |
+| 400 | invalid_parameters | Request parameters are invalid |
+| 401 | unauthorized | Invalid or missing API key |
+| 404 | job_not_found | Processing job ID does not exist |
+| 429 | rate_limited | API rate limit exceeded |
+| 500 | processing_error | An error occurred during content processing |
+| 500 | embedding_error | An error occurred during embedding generation |
+| 500 | storage_error | An error occurred storing embeddings in Qdrant |
+
+## Authentication
+All endpoints require authentication via API key in the Authorization header:
+```
+Authorization: Bearer {API_KEY}
+```
+
+## Rate Limits
+- 100 requests per minute per API key
+- 10 concurrent processing jobs per API key

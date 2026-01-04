@@ -1,0 +1,10 @@
+{
+  "id": "2",
+  "name": "rag-retrieval-validation",
+  "title": "RAG Retrieval Pipeline Validation",
+  "description": "retrieve stored embeddings and validation the RAG retrieval pipeline                        target audience:developer validating vector based retrieval system.                  focus:accurate retrival of relevent book content from qdrant                         success criteria: successfully connect to qdrant and load stored data               user queries return top k relevant text chunk retrived content matches sourcs url    pipeline works end to end without errors             constraints: tech stack:python,qdrant client,cohere embeddings. data source :existing vector from spec-1 .format:simple retrievals and text queries via script . timeline :complete within 1 or 2 task .          not building:agent logic and llm buildings,chatbot or ui integration,fastapi backend,re-embeddings and data ingestion",
+  "status": "draft",
+  "created": "2026-01-02",
+  "branch": "2-rag-retrieval-validation",
+  "specFile": "specs/2-rag-retrieval-validation/spec.md"
+}
