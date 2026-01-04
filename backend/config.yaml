@@ -1,0 +1,24 @@
+# Configuration for Embeddings Generation Service
+
+cohere:
+  api_key: ${COHERE_API_KEY}
+  model: "embed-embed-english-v3.0"
+  embedding_size: 1024
+
+qdrant:
+  url: ${QDRANT_URL}
+  api_key: ${QDRANT_API_KEY}
+  collection_name: ${QDRANT_COLLECTION_NAME:-book_embeddings}
+  vector_size: 1024
+  distance: "Cosine"
+
+processing:
+  chunk_size: 1000  # words per chunk
+  max_concurrent_requests: 5
+  retry_attempts: 3
+  timeout: 30
+
+api:
+  host: "0.0.0.0"
+  port: 8000
+  rate_limit: 100  # requests per minute
